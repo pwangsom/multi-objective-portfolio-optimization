@@ -1,4 +1,4 @@
-package com.amonthep.portfolio;
+package com.amontep.portfolio;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
-import com.amonthep.portfolio.problem.PorfolioDoubleProblem;
-import com.amonthep.portfolio.stock.StockInitilizer;
+import com.amontep.portfolio.problem.PorfolioDoubleProblem;
+import com.amontep.portfolio.stock.StockInitilizer;
 
 /**
  * Class to configure and run the NSGA-III algorithm

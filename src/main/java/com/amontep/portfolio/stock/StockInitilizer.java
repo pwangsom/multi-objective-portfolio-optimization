@@ -1,4 +1,4 @@
-package com.amonthep.portfolio.stock;
+package com.amontep.portfolio.stock;
 
 import java.util.ArrayList;
 import java.util.List;

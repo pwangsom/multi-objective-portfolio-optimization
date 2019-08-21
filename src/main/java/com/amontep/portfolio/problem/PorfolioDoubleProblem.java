@@ -1,4 +1,4 @@
-package com.amonthep.portfolio.problem;
+package com.amontep.portfolio.problem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.solutionattribute.impl.NumberOfViolatedConstraints;
 import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 
-import com.amonthep.portfolio.stock.Stock;
+import com.amontep.portfolio.stock.Stock;
 
 @SuppressWarnings({"serial"})
 public class PorfolioDoubleProblem extends AbstractDoubleProblem implements ConstrainedProblem<DoubleSolution> {
