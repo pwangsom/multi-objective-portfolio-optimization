@@ -67,15 +67,18 @@ public class NsgaiiiDoubleProblemRunner extends AbstractAlgorithmRunner {
 
     List<DoubleSolution> population = algorithm.getResult() ;
     long computingTime = algorithmRunner.getComputingTime() ;
+    
+    String varFile = "double-problem-variable.tsv";
+    String objFile = "double-problem-objective.tsv";
 
     new SolutionListOutput(population)
             .setSeparator("\t")
-            .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-            .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+            .setVarFileOutputContext(new DefaultFileOutputContext(varFile))
+            .setFunFileOutputContext(new DefaultFileOutputContext(objFile))
             .print() ;
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+    JMetalLogger.logger.info("Objectives values have been written to file " + varFile);
+    JMetalLogger.logger.info("Variables values have been written to file " + objFile);
   }
 }

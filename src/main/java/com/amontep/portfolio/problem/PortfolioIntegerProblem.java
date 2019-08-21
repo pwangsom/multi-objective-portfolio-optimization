@@ -4,38 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uma.jmetal.problem.ConstrainedProblem;
-import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
-import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
+import org.uma.jmetal.solution.IntegerSolution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.solutionattribute.impl.NumberOfViolatedConstraints;
 import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 
 import com.amontep.portfolio.stock.Stock;
 
-@SuppressWarnings({"serial"})
-public class PorfolioDoubleProblem extends AbstractDoubleProblem implements ConstrainedProblem<DoubleSolution> {
+@SuppressWarnings("serial")
+public class PortfolioIntegerProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
 	
 	private final int NO_OBJECTIVES = 3;
 	private final int NO_CONSTRAINTS = 1;
-	private final double LOWER_BOUND = 0.0;
-	private final double UPPER_BOUND = 0.25;
+	private final int LOWER_BOUND = 0;
+	private final int UPPER_BOUND = 2500;
 	
 	private List<Stock> stockList;
 	private Double totalWeight = 0.0;
 	
-	public OverallConstraintViolation<DoubleSolution> overallConstraintViolationDegree;
-	public NumberOfViolatedConstraints<DoubleSolution> numberOfViolatedConstraints;
-
-	public PorfolioDoubleProblem(List<Stock> stockList) throws JMetalException {
+	public OverallConstraintViolation<IntegerSolution> overallConstraintViolationDegree;
+	public NumberOfViolatedConstraints<IntegerSolution> numberOfViolatedConstraints;
+	
+	public PortfolioIntegerProblem(List<Stock> stockList) throws JMetalException {
 		this.stockList = stockList;
 		
 		setNumberOfVariables(this.stockList.size());
 		setNumberOfObjectives(NO_OBJECTIVES);
 		setNumberOfConstraints(NO_CONSTRAINTS);
-		setName("PorfolioDoubleProblem");
+		setName("PortfolioIntegerProblem");
 
-		List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables());
-		List<Double> upperLimit = new ArrayList<>(getNumberOfVariables());
+		List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables());
+		List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
 			lowerLimit.add(LOWER_BOUND);
@@ -45,12 +45,12 @@ public class PorfolioDoubleProblem extends AbstractDoubleProblem implements Cons
 		setLowerLimit(lowerLimit);
 		setUpperLimit(upperLimit);
 		
-	    overallConstraintViolationDegree = new OverallConstraintViolation<DoubleSolution>();
-	    numberOfViolatedConstraints = new NumberOfViolatedConstraints<DoubleSolution>();
+	    overallConstraintViolationDegree = new OverallConstraintViolation<IntegerSolution>();
+	    numberOfViolatedConstraints = new NumberOfViolatedConstraints<IntegerSolution>();
 	}
 
 	@Override
-	public void evaluate(DoubleSolution solution) {
+	public void evaluate(IntegerSolution solution) {
 		// TODO Auto-generated method stub
 		
 		Double totalReturn = 0.0;
@@ -58,22 +58,21 @@ public class PorfolioDoubleProblem extends AbstractDoubleProblem implements Cons
 		
 		for(int i = 0; i < getNumberOfVariables(); i++) {
 			
-			totalReturn += solution.getVariableValue(i) * stockList.get(i).getReturnProfit();
-			totalRisk += solution.getVariableValue(i) * stockList.get(i).getRisk();
+			totalReturn += ((double) solution.getVariableValue(i) / 10000.0) * stockList.get(i).getReturnProfit();
+			totalRisk += ((double) solution.getVariableValue(i) / 10000.0) * stockList.get(i).getRisk();
 			
-			totalWeight += solution.getVariableValue(i);
+			totalWeight += (double) solution.getVariableValue(i) / 10000.0;
 			
 		}
 		
 		solution.setObjective(0, totalReturn);
 		solution.setObjective(1, totalRisk);
-		solution.setObjective(2, 0.0);
+		solution.setObjective(2, 0.0);		
 	}
 
 	@Override
-	public void evaluateConstraints(DoubleSolution solution) {
+	public void evaluateConstraints(IntegerSolution solution) {
 		// TODO Auto-generated method stub
-		
 	    Double constraintWeight = 0.0;
 	    
 	    if(totalWeight > 1.0) {
@@ -92,7 +91,6 @@ public class PorfolioDoubleProblem extends AbstractDoubleProblem implements Cons
 
 	    overallConstraintViolationDegree.setAttribute(solution, overallConstraintViolation);
 	    numberOfViolatedConstraints.setAttribute(solution, violatedConstraints);
-	    
 	}
 
 }
