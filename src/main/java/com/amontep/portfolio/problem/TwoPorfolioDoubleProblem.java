@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uma.jmetal.problem.ConstrainedProblem;
-import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
-import org.uma.jmetal.solution.IntegerSolution;
+import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
+import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.solutionattribute.impl.NumberOfViolatedConstraints;
 import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
@@ -13,29 +13,29 @@ import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 import com.amontep.portfolio.stock.Stock;
 
 @SuppressWarnings("serial")
-public class PortfolioIntegerProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
+public class TwoPorfolioDoubleProblem extends AbstractDoubleProblem implements ConstrainedProblem<DoubleSolution> {
 	
-	private final int NO_OBJECTIVES = 3;
+	private final int NO_OBJECTIVES = 2;
 	private final int NO_CONSTRAINTS = 1;
-	private final int LOWER_BOUND = 0;
-	private final int UPPER_BOUND = 7000;
-
+	private final double LOWER_BOUND = -0.25;
+	private final double UPPER_BOUND = 0.25;
+	
 	private Stock stock;
 	private Double totalWeight = 0.0;
 	
-	public OverallConstraintViolation<IntegerSolution> overallConstraintViolationDegree;
-	public NumberOfViolatedConstraints<IntegerSolution> numberOfViolatedConstraints;
-	
-	public PortfolioIntegerProblem(Stock stock) throws JMetalException {
-		this.stock = stock;
+	public OverallConstraintViolation<DoubleSolution> overallConstraintViolationDegree;
+	public NumberOfViolatedConstraints<DoubleSolution> numberOfViolatedConstraints;
 
+	public TwoPorfolioDoubleProblem(Stock stock) throws JMetalException {
+		this.stock = stock;
+		
 		setNumberOfVariables(this.stock.getExpectedReturns().length);
 		setNumberOfObjectives(NO_OBJECTIVES);
 		setNumberOfConstraints(NO_CONSTRAINTS);
-		setName("PortfolioIntegerProblem");
+		setName("PorfolioDoubleProblem");
 
-		List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables());
-		List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables());
+		List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables());
+		List<Double> upperLimit = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
 			lowerLimit.add(LOWER_BOUND);
@@ -45,12 +45,12 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
 		setLowerLimit(lowerLimit);
 		setUpperLimit(upperLimit);
 		
-	    overallConstraintViolationDegree = new OverallConstraintViolation<IntegerSolution>();
-	    numberOfViolatedConstraints = new NumberOfViolatedConstraints<IntegerSolution>();
+	    overallConstraintViolationDegree = new OverallConstraintViolation<DoubleSolution>();
+	    numberOfViolatedConstraints = new NumberOfViolatedConstraints<DoubleSolution>();
 	}
 
 	@Override
-	public void evaluate(IntegerSolution solution) {
+	public void evaluate(DoubleSolution solution) {
 		// TODO Auto-generated method stub
 		
 		Double expectedReturn = 0.0;
@@ -59,7 +59,7 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
         for (int i = 0; i < solution.getNumberOfVariables(); i++) {
         	
         	Double weigth = 0.0;        	
-        	if(solution.getVariableValue(i) > 500 && solution.getVariableValue(i) < 2001) weigth = solution.getVariableValue(i) / 10000.0;
+        	if(solution.getVariableValue(i).compareTo(Double.valueOf(0.0)) > 0) weigth = solution.getVariableValue(i);
         	
             expectedReturn += weigth * stock.getExpectedReturns()[i];
             totalWeight += weigth;
@@ -68,29 +68,27 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
 
         for (int i = 0; i < solution.getNumberOfVariables(); i++) {
         	Double weigth = 0.0;        	
-        	if(solution.getVariableValue(i) > 500 && solution.getVariableValue(i) < 2001) weigth = solution.getVariableValue(i) / 10000.0;
+        	if(solution.getVariableValue(i).compareTo(Double.valueOf(0.0)) > 0) weigth = solution.getVariableValue(i);
         	
             for (int j = 0; j < solution.getNumberOfVariables(); j++) {           	
             	
                 risk += weigth * weigth * stock.getCovarianceMatrix()[i][j];
             }
         }
-
+		
 		solution.setObjective(0, expectedReturn * -1);
 		solution.setObjective(1, risk);
-		solution.setObjective(2, 0.0);		
 	}
 
 	@Override
-	public void evaluateConstraints(IntegerSolution solution) {
+	public void evaluateConstraints(DoubleSolution solution) {
 		// TODO Auto-generated method stub
+		
 	    Double constraintWeight = 0.0;
 	    
 	    if(totalWeight > 1.0) {
 	    	constraintWeight = 1.0 - totalWeight;
-	    } else if (totalWeight < 1.0) {
-	    	constraintWeight = totalWeight - 1.0;	    	
-	    }
+	    } else if (totalWeight < 1.0) { constraintWeight = totalWeight - 1.0; }
 
 	    double overallConstraintViolation = 0.0;	    
 	    int violatedConstraints = 0;
@@ -102,6 +100,8 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
 
 	    overallConstraintViolationDegree.setAttribute(solution, overallConstraintViolation);
 	    numberOfViolatedConstraints.setAttribute(solution, violatedConstraints);
-	}
-
+	    
+	}	
+	
+	
 }

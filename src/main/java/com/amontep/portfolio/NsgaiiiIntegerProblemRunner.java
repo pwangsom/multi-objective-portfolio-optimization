@@ -20,54 +20,48 @@ import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 import com.amontep.portfolio.problem.PortfolioIntegerProblem;
-import com.amontep.portfolio.stock.StockInitilizer;
+import com.amontep.portfolio.stock.Stock;
 
 public class NsgaiiiIntegerProblemRunner extends AbstractAlgorithmRunner {
 
-	  public static void main(String[] args) throws JMetalException {
-		    Problem<IntegerSolution> problem;
-		    Algorithm<List<IntegerSolution>> algorithm;
-		    CrossoverOperator<IntegerSolution> crossover;
-		    MutationOperator<IntegerSolution> mutation;
-		    SelectionOperator<List<IntegerSolution>, IntegerSolution> selection;
+	public static void main(String[] args) throws JMetalException {
+		Problem<IntegerSolution> problem;
+		Algorithm<List<IntegerSolution>> algorithm;
+		CrossoverOperator<IntegerSolution> crossover;
+		MutationOperator<IntegerSolution> mutation;
+		SelectionOperator<List<IntegerSolution>, IntegerSolution> selection;
 
-	    problem = new PortfolioIntegerProblem(StockInitilizer.getStockList());
-	    
-	    double crossoverProbability = 0.9 ;
-	    double crossoverDistributionIndex = 30.0 ;
-	    crossover = new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+		Stock stock = new Stock();
+		problem = new PortfolioIntegerProblem(stock);
 
-	    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-	    double mutationDistributionIndex = 20.0 ;
-	    mutation = new IntegerPolynomialMutation(mutationProbability, mutationDistributionIndex) ;
-	    
-	    selection = new BinaryTournamentSelection<IntegerSolution>();
-	    
-	    algorithm = new NSGAIIIBuilder<>(problem)
-	            .setCrossoverOperator(crossover)
-	            .setMutationOperator(mutation)
-	            .setSelectionOperator(selection)
-	            .setMaxIterations(300)
-	            .build() ;
+		double crossoverProbability = 0.9;
+		double crossoverDistributionIndex = 30.0;
+		crossover = new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
-	    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-	            .execute() ;
+		double mutationProbability = 1.0 / problem.getNumberOfVariables();
+		double mutationDistributionIndex = 20.0;
+		mutation = new IntegerPolynomialMutation(mutationProbability, mutationDistributionIndex);
 
-	    List<IntegerSolution> population = algorithm.getResult() ;
-	    long computingTime = algorithmRunner.getComputingTime() ;
-	    
-	    String varFile = "integer-problem-variable.tsv";
-	    String objFile = "integer-problem-objective.tsv";
+		selection = new BinaryTournamentSelection<IntegerSolution>();
 
-	    new SolutionListOutput(population)
-	            .setSeparator("\t")
-	            .setVarFileOutputContext(new DefaultFileOutputContext(varFile))
-	            .setFunFileOutputContext(new DefaultFileOutputContext(objFile))
-	            .print() ;
+		algorithm = new NSGAIIIBuilder<>(problem).setCrossoverOperator(crossover).setMutationOperator(mutation)
+				.setSelectionOperator(selection).setMaxIterations(100000).build();
 
-	    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-	    JMetalLogger.logger.info("Objectives values have been written to file " + varFile);
-	    JMetalLogger.logger.info("Variables values have been written to file " + objFile);
-	  }
-	
+		AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+
+		List<IntegerSolution> population = algorithm.getResult();
+		long computingTime = algorithmRunner.getComputingTime();
+
+		String varFile = "nsgaiii-integer-problem-variable.tsv";
+		String objFile = "nsgaiii-integer-problem-objective.tsv";
+
+		new SolutionListOutput(population).setSeparator("\t")
+				.setVarFileOutputContext(new DefaultFileOutputContext(varFile))
+				.setFunFileOutputContext(new DefaultFileOutputContext(objFile)).print();
+
+		JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+		JMetalLogger.logger.info("Objectives values have been written to file " + varFile);
+		JMetalLogger.logger.info("Variables values have been written to file " + objFile);
+	}
+
 }
