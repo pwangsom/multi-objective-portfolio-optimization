@@ -13,23 +13,21 @@ import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 import com.amontep.portfolio.stock.Stock;
 
 @SuppressWarnings("serial")
-public class TwoPorfolioDoubleProblem extends AbstractDoubleProblem implements ConstrainedProblem<DoubleSolution> {
+public class TwoPorfolioDoubleConstrainedProblem extends AbstractDoubleProblem implements ConstrainedProblem<DoubleSolution> {
 	
 	private final int NO_OBJECTIVES = 2;
 	private final int NO_CONSTRAINTS = 1;
 	private final double LOWER_BOUND = -0.25;
 	private final double UPPER_BOUND = 0.25;
 	
-	private Stock stock;
 	private Double totalWeight = 0.0;
 	
 	public OverallConstraintViolation<DoubleSolution> overallConstraintViolationDegree;
 	public NumberOfViolatedConstraints<DoubleSolution> numberOfViolatedConstraints;
 
-	public TwoPorfolioDoubleProblem(Stock stock) throws JMetalException {
-		this.stock = stock;
+	public TwoPorfolioDoubleConstrainedProblem() throws JMetalException {
 		
-		setNumberOfVariables(this.stock.getExpectedReturns().length);
+		setNumberOfVariables(Stock.getExpectedReturns().length);
 		setNumberOfObjectives(NO_OBJECTIVES);
 		setNumberOfConstraints(NO_CONSTRAINTS);
 		setName("PorfolioDoubleProblem");
@@ -61,7 +59,7 @@ public class TwoPorfolioDoubleProblem extends AbstractDoubleProblem implements C
         	Double weigth = 0.0;        	
         	if(solution.getVariableValue(i).compareTo(Double.valueOf(0.0)) > 0) weigth = solution.getVariableValue(i);
         	
-            expectedReturn += weigth * stock.getExpectedReturns()[i];
+            expectedReturn += weigth * Stock.getExpectedReturns()[i];
             totalWeight += weigth;
 
         }
@@ -72,7 +70,7 @@ public class TwoPorfolioDoubleProblem extends AbstractDoubleProblem implements C
         	
             for (int j = 0; j < solution.getNumberOfVariables(); j++) {           	
             	
-                risk += weigth * weigth * stock.getCovarianceMatrix()[i][j];
+                risk += weigth * weigth * Stock.getCovarianceMatrix()[i][j];
             }
         }
 		

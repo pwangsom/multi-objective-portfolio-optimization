@@ -19,8 +19,7 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
-import com.amontep.portfolio.problem.PortfolioIntegerProblem;
-import com.amontep.portfolio.stock.Stock;
+import com.amontep.portfolio.problem.PortfolioIntegerConstrainedProblem;
 
 public class NsgaiiiIntegerProblemRunner extends AbstractAlgorithmRunner {
 
@@ -31,8 +30,7 @@ public class NsgaiiiIntegerProblemRunner extends AbstractAlgorithmRunner {
 		MutationOperator<IntegerSolution> mutation;
 		SelectionOperator<List<IntegerSolution>, IntegerSolution> selection;
 
-		Stock stock = new Stock();
-		problem = new PortfolioIntegerProblem(stock);
+		problem = new PortfolioIntegerConstrainedProblem();
 
 		double crossoverProbability = 0.9;
 		double crossoverDistributionIndex = 30.0;

@@ -19,8 +19,7 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
-import com.amontep.portfolio.problem.TwoPorfolioDoubleProblem;
-import com.amontep.portfolio.stock.Stock;
+import com.amontep.portfolio.problem.TwoPorfolioDoubleConstrainedProblem;
 
 public class NsgaiiDoubleProblemRunner extends AbstractAlgorithmRunner {
 
@@ -33,8 +32,7 @@ public class NsgaiiDoubleProblemRunner extends AbstractAlgorithmRunner {
 		MutationOperator<DoubleSolution> mutation;
 		SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
 
-		Stock stock = new Stock();
-		problem = new TwoPorfolioDoubleProblem(stock);
+		problem = new TwoPorfolioDoubleConstrainedProblem();
 
 		double crossoverProbability = 0.9;
 		double crossoverDistributionIndex = 20.0;

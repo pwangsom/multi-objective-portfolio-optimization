@@ -13,23 +13,21 @@ import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 import com.amontep.portfolio.stock.Stock;
 
 @SuppressWarnings("serial")
-public class PortfolioIntegerProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
+public class PortfolioIntegerConstrainedProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
 	
 	private final int NO_OBJECTIVES = 3;
 	private final int NO_CONSTRAINTS = 1;
 	private final int LOWER_BOUND = 0;
 	private final int UPPER_BOUND = 7000;
 
-	private Stock stock;
 	private Double totalWeight = 0.0;
 	
 	public OverallConstraintViolation<IntegerSolution> overallConstraintViolationDegree;
 	public NumberOfViolatedConstraints<IntegerSolution> numberOfViolatedConstraints;
 	
-	public PortfolioIntegerProblem(Stock stock) throws JMetalException {
-		this.stock = stock;
+	public PortfolioIntegerConstrainedProblem() throws JMetalException {
 
-		setNumberOfVariables(this.stock.getExpectedReturns().length);
+		setNumberOfVariables(Stock.getExpectedReturns().length);
 		setNumberOfObjectives(NO_OBJECTIVES);
 		setNumberOfConstraints(NO_CONSTRAINTS);
 		setName("PortfolioIntegerProblem");
@@ -61,7 +59,7 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
         	Double weigth = 0.0;        	
         	if(solution.getVariableValue(i) > 500 && solution.getVariableValue(i) < 2001) weigth = solution.getVariableValue(i) / 10000.0;
         	
-            expectedReturn += weigth * stock.getExpectedReturns()[i];
+            expectedReturn += weigth * Stock.getExpectedReturns()[i];
             totalWeight += weigth;
 
         }
@@ -72,7 +70,7 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
         	
             for (int j = 0; j < solution.getNumberOfVariables(); j++) {           	
             	
-                risk += weigth * weigth * stock.getCovarianceMatrix()[i][j];
+                risk += weigth * weigth * Stock.getCovarianceMatrix()[i][j];
             }
         }
 
