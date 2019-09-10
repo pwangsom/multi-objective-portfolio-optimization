@@ -13,23 +13,21 @@ import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 import com.amontep.portfolio.stock.Stock;
 
 @SuppressWarnings("serial")
-public class PortfolioIntegerProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
+public class PortfolioIntegerConstrainedProblem extends AbstractIntegerProblem implements ConstrainedProblem<IntegerSolution> {
 	
 	private final int NO_OBJECTIVES = 3;
 	private final int NO_CONSTRAINTS = 1;
 	private final int LOWER_BOUND = 0;
-	private final int UPPER_BOUND = 2500;
-	
-	private List<Stock> stockList;
+	private final int UPPER_BOUND = 7000;
+
 	private Double totalWeight = 0.0;
 	
 	public OverallConstraintViolation<IntegerSolution> overallConstraintViolationDegree;
 	public NumberOfViolatedConstraints<IntegerSolution> numberOfViolatedConstraints;
 	
-	public PortfolioIntegerProblem(List<Stock> stockList) throws JMetalException {
-		this.stockList = stockList;
-		
-		setNumberOfVariables(this.stockList.size());
+	public PortfolioIntegerConstrainedProblem() throws JMetalException {
+
+		setNumberOfVariables(Stock.getExpectedReturns().length);
 		setNumberOfObjectives(NO_OBJECTIVES);
 		setNumberOfConstraints(NO_CONSTRAINTS);
 		setName("PortfolioIntegerProblem");
@@ -53,20 +51,31 @@ public class PortfolioIntegerProblem extends AbstractIntegerProblem implements C
 	public void evaluate(IntegerSolution solution) {
 		// TODO Auto-generated method stub
 		
-		Double totalReturn = 0.0;
-		Double totalRisk = 0.0;
-		
-		for(int i = 0; i < getNumberOfVariables(); i++) {
-			
-			totalReturn += ((double) solution.getVariableValue(i) / 10000.0) * stockList.get(i).getReturnProfit();
-			totalRisk += ((double) solution.getVariableValue(i) / 10000.0) * stockList.get(i).getRisk();
-			
-			totalWeight += (double) solution.getVariableValue(i) / 10000.0;
-			
-		}
-		
-		solution.setObjective(0, totalReturn);
-		solution.setObjective(1, totalRisk);
+		Double expectedReturn = 0.0;
+		Double risk = 0.0;
+
+        for (int i = 0; i < solution.getNumberOfVariables(); i++) {
+        	
+        	Double weigth = 0.0;        	
+        	if(solution.getVariableValue(i) > 500 && solution.getVariableValue(i) < 2001) weigth = solution.getVariableValue(i) / 10000.0;
+        	
+            expectedReturn += weigth * Stock.getExpectedReturns()[i];
+            totalWeight += weigth;
+
+        }
+
+        for (int i = 0; i < solution.getNumberOfVariables(); i++) {
+        	Double weigth = 0.0;        	
+        	if(solution.getVariableValue(i) > 500 && solution.getVariableValue(i) < 2001) weigth = solution.getVariableValue(i) / 10000.0;
+        	
+            for (int j = 0; j < solution.getNumberOfVariables(); j++) {           	
+            	
+                risk += weigth * weigth * Stock.getCovarianceMatrix()[i][j];
+            }
+        }
+
+		solution.setObjective(0, expectedReturn * -1);
+		solution.setObjective(1, risk);
 		solution.setObjective(2, 0.0);		
 	}
 
