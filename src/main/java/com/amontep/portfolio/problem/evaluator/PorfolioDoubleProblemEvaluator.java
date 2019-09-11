@@ -20,16 +20,22 @@ public class PorfolioDoubleProblemEvaluator {
 	private DoubleSolution adjustedsolution;
 	
 	private final Double MAX_WEIGHT = 1.0;
+	private Integer maxStock = 10;
 	
 	private List<DoubleGene> originGenes;
 	private List<DoubleGene> newGenes;
-
+	
 	public PorfolioDoubleProblemEvaluator(DoubleSolution solution) {
 		this.solution = solution;
 		this.adjustedsolution = (DoubleSolution) solution.copy();
 
 		originGenes = new ArrayList<DoubleGene>();
 		newGenes = new ArrayList<DoubleGene>();
+	}
+
+	public PorfolioDoubleProblemEvaluator(DoubleSolution solution, Integer noOfStock) {
+		this(solution);		
+		this.maxStock = noOfStock;
 	}
 	
 	public void createAdjustedSolution() {
@@ -38,9 +44,11 @@ public class PorfolioDoubleProblemEvaluator {
 		// Sort fullGens by solutionValue: Largest -> smallest		
 		originGenes = originGenes.stream().sorted(Comparator.comparingDouble(DoubleGene::getSolutionValue).reversed()).collect(Collectors.toList());
 		
-		findTopGenesWithinMaxWeight();
-		updateSolutionNew();
+		//findTopGenesWithinMaxWeight();
 		
+		findTopStock();
+		
+		updateSolutionNew();		
 	}
 	
 	public void evaluate() {	
@@ -59,6 +67,43 @@ public class PorfolioDoubleProblemEvaluator {
 		newGenes.stream().forEach(gene -> {			
 			adjustedsolution.setVariableValue(gene.getSolutionIndex(), gene.getSolutionValue());			
 		});		
+	}
+	
+	private void findTopStock() {
+		
+		int count = 0;
+		Double topStockWeight = 0.0;
+		
+		for(DoubleGene gene : originGenes) {	
+        	DoubleGene clone = new DoubleGene();
+        	clone.setSolutionIndex(gene.getSolutionIndex());
+			
+			if(count < maxStock) {
+				topStockWeight += gene.getSolutionValue();
+				clone.setSolutionValue(gene.getSolutionValue());
+			} else {	
+	        	clone.setSolutionValue(0.0);	
+			}		
+			
+			newGenes.add(clone);
+			count++;		
+		}
+		
+		
+		if(!(topStockWeight.compareTo(MAX_WEIGHT) == 0)) {
+			Double avgAdjusted = Math.abs(topStockWeight - MAX_WEIGHT) / maxStock;
+			
+			if(topStockWeight.compareTo(MAX_WEIGHT) < 0) {
+				for(int i = 0; i < maxStock; i++) {
+					newGenes.get(i).setSolutionValue(newGenes.get(i).getSolutionValue() + avgAdjusted);
+				}
+			} else {
+				for(int i = 0; i < maxStock; i++) {
+					newGenes.get(i).setSolutionValue(newGenes.get(i).getSolutionValue() - avgAdjusted);
+				}
+			}
+		}
+		
 	}
 	
 	private void findTopGenesWithinMaxWeight() {		
